@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  petstore-app:
+    image: swaggerapi/petstore
+    ports:
+      - "8080:8080"
+    networks:
+      - app-network
+
+  envoy:
+    image: envoyproxy/envoy:v1.30.0
+    ports:
+      - "10000:10000"
+      - "9901:9901"
+    volumes:
+      - ./routes.yaml:/etc/envoy/routes/routes.yaml
+      - ./envoy.yaml:/etc/envoy/envoy.yaml
+    networks:
+      - app-network
+    depends_on:
+      - petstore-app
+
+networks:
+  app-network:
+    driver: bridge
