@@ -5,7 +5,7 @@ resources:
   - name: local_service
     domains: ["*"]
     routes:
-    # Method-specific route for GET /api/hello
+    # Pet endpoints
     - match:
         safe_regex:
           regex: "/api/pet/[0-9]+"
@@ -14,27 +14,173 @@ resources:
           exact_match: "GET"
       route:
         cluster: petstore_app_service
-    
-    # Method-specific route for POST /api/hello
+
     - match:
-        path: "/api/hello"
+        safe_regex:
+          regex: "/api/pet/[0-9]+/uploadImage"
         headers:
         - name: ":method"
           exact_match: "POST"
       route:
-        prefix_rewrite: "/hello"
         cluster: petstore_app_service
-    
-    # Default route for other methods - returns 405 Method Not Allowed
+
     - match:
-        path: "/api/hello"
-      direct_response:
-        status: 405
-        body:
-          inline_string: "Method Not Allowed"
-    
-    # General route for other paths
+        path: "/api/pet"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/pet"
+        headers:
+        - name: ":method"
+          exact_match: "PUT"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/pet/findByStatus"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/pet/findByTags"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/pet/[0-9]+"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/pet/[0-9]+"
+        headers:
+        - name: ":method"
+          exact_match: "DELETE"
+      route:
+        cluster: petstore_app_service
+
+    # Store endpoints
+    - match:
+        path: "/api/store/inventory"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/store/order"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/store/order/[0-9]+"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/store/order/[0-9]+"
+        headers:
+        - name: ":method"
+          exact_match: "DELETE"
+      route:
+        cluster: petstore_app_service
+
+    # User endpoints
+    - match:
+        path: "/api/user/createWithList"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/user/[^/]+"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/user/[^/]+"
+        headers:
+        - name: ":method"
+          exact_match: "PUT"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        safe_regex:
+          regex: "/api/user/[^/]+"
+        headers:
+        - name: ":method"
+          exact_match: "DELETE"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/user/login"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/user/logout"
+        headers:
+        - name: ":method"
+          exact_match: "GET"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/user/createWithArray"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    - match:
+        path: "/api/user"
+        headers:
+        - name: ":method"
+          exact_match: "POST"
+      route:
+        cluster: petstore_app_service
+
+    # Default route for unmatched endpoints
     - match:
         prefix: "/"
       direct_response:
-        status: 480
+        status: 404
+        body:
+          inline_string: "Not Found"
